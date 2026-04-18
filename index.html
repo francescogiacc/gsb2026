@@ -3,373 +3,666 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Weekend GSB 2026</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<title>Weekend GSB 2026 — Top Secret</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,700;1,9..144,900&family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
     --sun: #FFD93D;
     --coral: #FF6B6B;
     --mint: #6BCB77;
     --sky: #4D96FF;
-    --bg: #FFF8ED;
-    --dark: #1A1A2E;
-    --card: #ffffff;
+    --lilac: #B59CFF;
+    --bg: #F3EADB;
+    --bg-alt: #EADFC8;
+    --dark: #141420;
+    --ink: #1A1A2E;
+    --paper: #FFFCF5;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
+  html { scroll-behavior: smooth; }
+
   body {
     background: var(--bg);
     font-family: 'Space Mono', monospace;
-    color: var(--dark);
+    color: var(--ink);
     overflow-x: hidden;
-    cursor: none;
+    position: relative;
+  }
+
+  /* GRAIN + PAPER TEXTURE */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.08;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.9 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  /* Gradient mesh background */
+  .mesh {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(60% 40% at 10% 20%, rgba(255,107,107,0.35), transparent 60%),
+      radial-gradient(50% 50% at 90% 10%, rgba(255,217,61,0.45), transparent 60%),
+      radial-gradient(40% 40% at 80% 80%, rgba(107,203,119,0.28), transparent 60%),
+      radial-gradient(35% 35% at 20% 90%, rgba(77,150,255,0.28), transparent 60%);
+    filter: blur(40px) saturate(120%);
+    animation: meshDrift 20s ease-in-out infinite alternate;
+  }
+
+  @keyframes meshDrift {
+    0%   { transform: translate3d(0,0,0) scale(1); }
+    100% { transform: translate3d(-3%, 2%, 0) scale(1.06); }
   }
 
   /* Custom cursor */
   .cursor {
-    width: 20px; height: 20px;
-    background: var(--coral);
+    width: 14px; height: 14px;
+    background: var(--ink);
     border-radius: 50%;
     position: fixed;
+    top: 0; left: 0;
     pointer-events: none;
     z-index: 9999;
     transform: translate(-50%, -50%);
-    transition: transform 0.1s ease, background 0.2s;
-    mix-blend-mode: multiply;
+    transition: width 0.25s cubic-bezier(.2,.9,.2,1), height 0.25s cubic-bezier(.2,.9,.2,1), background 0.2s, opacity 0.2s;
+    mix-blend-mode: difference;
   }
+  .cursor.grow { width: 60px; height: 60px; background: var(--coral); mix-blend-mode: normal; opacity: 0.85; }
+  @media (hover: none) { .cursor { display: none; } body { cursor: auto; } }
+  @media (hover: hover) { body { cursor: none; } a, button, .day-header, .countdown-item { cursor: none; } }
 
-  /* Background blobs */
-  .blob {
+  main { position: relative; z-index: 2; }
+
+  /* Sticky top rail */
+  .rail {
     position: fixed;
-    border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.3;
+    top: 0; left: 0; right: 0;
+    z-index: 50;
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--ink);
+    mix-blend-mode: difference;
+    color: #fff;
     pointer-events: none;
-    z-index: 0;
   }
-  .blob-1 { width: 400px; height: 400px; background: var(--sun); top: -100px; right: -100px; }
-  .blob-2 { width: 300px; height: 300px; background: var(--coral); bottom: 100px; left: -80px; }
-  .blob-3 { width: 250px; height: 250px; background: var(--mint); top: 50%; right: 10%; }
+  .rail .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--coral);
+    display: inline-block;
+    margin-right: 0.5rem;
+    animation: blink 1.4s ease-in-out infinite;
+    vertical-align: middle;
+  }
+  @keyframes blink { 50% { opacity: 0.2; } }
 
-  main { position: relative; z-index: 1; }
+  /* MARQUEE */
+  .marquee {
+    border-top: 2px solid var(--ink);
+    border-bottom: 2px solid var(--ink);
+    background: var(--ink);
+    color: var(--sun);
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 0.9rem 0;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 900;
+    font-size: clamp(1.6rem, 4vw, 2.8rem);
+    letter-spacing: -0.01em;
+    position: relative;
+  }
+  .marquee-track {
+    display: inline-block;
+    animation: scroll 30s linear infinite;
+    padding-left: 100%;
+  }
+  .marquee span.star { color: var(--coral); margin: 0 1.2rem; font-style: normal; }
+  .marquee span.out { -webkit-text-stroke: 1.5px var(--sun); color: transparent; }
+  @keyframes scroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-100%); }
+  }
 
   /* HERO */
   .hero {
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr;
     align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 2rem;
+    padding: 6rem 2rem 3rem;
     position: relative;
   }
-
+  .hero-inner {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    position: relative;
+  }
   .hero-tag {
-    background: var(--dark);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--ink);
     color: var(--sun);
-    font-family: 'Space Mono', monospace;
-    font-size: 0.7rem;
-    letter-spacing: 0.2em;
-    padding: 6px 16px;
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    padding: 8px 14px;
     border-radius: 2px;
-    margin-bottom: 1.5rem;
-    display: inline-block;
-    animation: fadeDown 0.8s ease both;
+    margin-bottom: 2rem;
+    animation: fadeDown 0.9s ease both;
+  }
+  .hero-tag .pulse {
+    width: 6px; height: 6px; background: var(--coral);
+    border-radius: 50%;
+    animation: pulseDot 1.2s ease-in-out infinite;
+  }
+  @keyframes pulseDot {
+    0%, 100% { box-shadow: 0 0 0 0 var(--coral); }
+    50%      { box-shadow: 0 0 0 6px rgba(255,107,107,0); }
   }
 
   .hero h1 {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: clamp(3.5rem, 12vw, 9rem);
-    line-height: 0.9;
-    letter-spacing: -0.02em;
-    animation: fadeUp 0.8s ease 0.2s both;
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: clamp(4.5rem, 18vw, 15rem);
+    line-height: 0.85;
+    letter-spacing: -0.04em;
+    animation: fadeUp 0.9s ease 0.2s both;
+    position: relative;
+  }
+  .hero h1 .gsb {
+    display: inline-block;
+    color: var(--coral);
+    font-style: italic;
+  }
+  .hero h1 .year {
+    display: inline-block;
+    -webkit-text-stroke: 2px var(--ink);
+    color: transparent;
+    margin-left: 0.1em;
+  }
+  .hero h1 .amp {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--ink);
+    font-size: 0.55em;
+    vertical-align: 0.3em;
+    margin: 0 0.15em;
   }
 
-  .hero h1 span.gsb { color: var(--coral); }
-  .hero h1 span.year {
-    -webkit-text-stroke: 2px var(--dark);
-    color: transparent;
+  .hero-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+    animation: fadeUp 0.9s ease 0.45s both;
   }
 
   .hero-emoji {
-    font-size: clamp(2rem, 6vw, 4rem);
-    margin: 1rem 0;
-    animation: bounce 2s ease infinite;
-    display: block;
+    font-size: clamp(2.5rem, 7vw, 5rem);
+    line-height: 1;
+    letter-spacing: 0.15em;
+    display: inline-block;
   }
+  .hero-emoji span {
+    display: inline-block;
+    animation: floaty 3.2s ease-in-out infinite;
+  }
+  .hero-emoji span:nth-child(2) { animation-delay: 0.3s; }
+  .hero-emoji span:nth-child(3) { animation-delay: 0.6s; }
 
-  .hero-sub {
-    font-size: 0.85rem;
-    letter-spacing: 0.1em;
-    color: #666;
-    margin-top: 1rem;
-    animation: fadeUp 0.8s ease 0.4s both;
+  .hero-meta {
+    text-align: right;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    line-height: 1.8;
+    color: var(--ink);
   }
+  .hero-meta .k { color: #888; }
+  .hero-meta .v { font-weight: 700; }
 
   .scroll-hint {
     position: absolute;
     bottom: 2rem;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 0.7rem;
-    letter-spacing: 0.2em;
-    color: #aaa;
-    animation: pulse 2s ease infinite;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .scroll-hint .line {
+    width: 1px; height: 40px;
+    background: var(--ink);
+    transform-origin: top;
+    animation: lineGrow 1.8s ease-in-out infinite;
+  }
+  @keyframes lineGrow {
+    0%, 100% { transform: scaleY(0.2); opacity: 0.3; }
+    50%      { transform: scaleY(1); opacity: 1; }
   }
 
   /* COUNTDOWN */
   .countdown-section {
-    padding: 5rem 2rem;
-    text-align: center;
+    padding: 7rem 2rem 5rem;
+    max-width: 1200px;
+    margin: 0 auto;
   }
-
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 1.2rem;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+  }
+  .section-num {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-style: italic;
+    font-size: 2rem;
+    color: var(--coral);
+  }
   .section-label {
     font-size: 0.7rem;
     letter-spacing: 0.3em;
-    color: #aaa;
+    color: #888;
     text-transform: uppercase;
-    margin-bottom: 1rem;
+  }
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    flex: 1 1 100%;
+    margin-top: 0.3rem;
+  }
+  .section-title em {
+    font-style: italic;
+    color: var(--coral);
+    font-weight: 700;
   }
 
   .countdown-grid {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
     gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-top: 2rem;
   }
-
   .countdown-item {
-    background: var(--dark);
-    color: var(--sun);
-    border-radius: 12px;
-    padding: 1.5rem 2rem;
-    min-width: 120px;
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 18px;
+    padding: 2rem 1rem 1.2rem;
+    text-align: center;
     position: relative;
     overflow: hidden;
-    transition: transform 0.2s;
+    transition: transform 0.35s cubic-bezier(.2,.9,.2,1);
   }
-
-  .countdown-item:hover { transform: translateY(-4px) rotate(-1deg); }
-
   .countdown-item::before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
-    height: 3px;
+    height: 4px;
     background: var(--coral);
   }
+  .countdown-item:nth-child(2)::before { background: var(--sun); }
+  .countdown-item:nth-child(3)::before { background: var(--mint); }
+  .countdown-item:nth-child(4)::before { background: var(--sky); }
+  .countdown-item:hover { transform: translateY(-6px) rotate(-0.6deg); }
 
   .countdown-num {
-    font-family: 'Syne', sans-serif;
-    font-size: 3.5rem;
-    font-weight: 800;
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: clamp(2.8rem, 7vw, 5rem);
     line-height: 1;
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Split-flap digit */
+  .flip-digit {
+    position: relative;
+    display: inline-block;
+    width: 0.65em;
+    height: 1em;
+    perspective: 400px;
+    overflow: hidden;
+    background: #0a0a14;
+    border-radius: 6px;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
+  }
+  .flip-digit .face {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backface-visibility: hidden;
+    transform-origin: center;
+  }
+  .flip-digit .current { z-index: 1; }
+  .flip-digit .next {
+    transform: rotateX(90deg);
+    z-index: 2;
+  }
+  .flip-digit.flipping .current {
+    animation: flipOut 0.5s ease-in forwards;
+  }
+  .flip-digit.flipping .next {
+    animation: flipIn 0.5s ease-out forwards;
+  }
+  @keyframes flipOut {
+    0%   { transform: rotateX(0);   }
+    100% { transform: rotateX(-90deg); }
+  }
+  @keyframes flipIn {
+    0%   { transform: rotateX(90deg); }
+    100% { transform: rotateX(0);    }
+  }
+
+  /* Split-text hero */
+  .split-char {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(0.6em) rotate(8deg);
+    animation: charIn 0.7s cubic-bezier(.2,.9,.2,1) forwards;
+  }
+  @keyframes charIn {
+    to { opacity: 1; transform: translateY(0) rotate(0); }
+  }
+
+  /* Parallax layers */
+  .parallax {
+    transition: transform 0.4s cubic-bezier(.2,.9,.2,1);
+    will-change: transform;
+  }
+  .countdown-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    color: #888;
+    margin-top: 0.6rem;
     display: block;
   }
 
-  .countdown-label {
-    font-size: 0.6rem;
-    letter-spacing: 0.2em;
-    color: #aaa;
-    margin-top: 0.3rem;
-    display: block;
+  @media (max-width: 620px) {
+    .countdown-grid { grid-template-columns: repeat(2, 1fr); }
   }
 
   /* PROGRAMMA */
   .program-section {
-    padding: 5rem 2rem;
-    max-width: 800px;
+    padding: 5rem 2rem 7rem;
+    max-width: 1000px;
     margin: 0 auto;
-  }
-
-  .program-section h2 {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(2rem, 6vw, 4rem);
-    font-weight: 800;
-    margin-bottom: 0.5rem;
   }
 
   .program-days {
     margin-top: 2.5rem;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.2rem;
   }
 
   .day-card {
-    border: 2px solid var(--dark);
-    border-radius: 12px;
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 18px;
     overflow: hidden;
+    transition: transform 0.3s cubic-bezier(.2,.9,.2,1), box-shadow 0.3s;
+  }
+  .day-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 10px 10px 0 var(--ink);
   }
 
   .day-header {
-    background: var(--dark);
-    color: white;
-    padding: 1rem 1.5rem;
+    padding: 1.4rem 1.8rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    cursor: pointer;
     user-select: none;
+    background: var(--ink);
+    color: var(--paper);
+    gap: 1rem;
   }
-
   .day-header-left {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 1.2rem;
+    flex-wrap: wrap;
   }
-
   .day-tag {
     background: var(--sun);
-    color: var(--dark);
+    color: var(--ink);
     font-size: 0.65rem;
-    letter-spacing: 0.15em;
-    padding: 3px 10px;
+    letter-spacing: 0.2em;
+    padding: 5px 12px;
     border-radius: 2px;
     font-weight: bold;
+    font-family: 'Space Mono', monospace;
   }
+  .day-card:nth-child(2) .day-tag { background: var(--mint); }
+  .day-card:nth-child(3) .day-tag { background: var(--lilac); color: var(--ink); }
 
   .day-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.1rem;
+    font-family: 'Fraunces', serif;
+    font-size: 1.3rem;
     font-weight: 700;
+    font-style: italic;
   }
 
   .lock-icon {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     transition: transform 0.3s;
   }
 
   .day-content {
-    padding: 1.5rem;
-    background: white;
-    display: none;
+    padding: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s cubic-bezier(.2,.9,.2,1), padding 0.3s;
   }
-
-  .day-content.unlocked { display: block; }
+  .day-content.unlocked { padding: 1.6rem 1.8rem; max-height: 800px; }
 
   .locked-msg {
     text-align: center;
-    padding: 2rem;
-    color: #aaa;
-    font-size: 0.8rem;
-    letter-spacing: 0.1em;
+    padding: 1.8rem;
+    color: #888;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
     display: none;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
   }
-
   .locked-msg.show { display: block; }
+  .locked-msg.shake { animation: shake 0.4s ease; color: var(--coral) !important; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+  }
 
   .program-item {
-    display: flex;
-    gap: 1rem;
-    padding: 0.75rem 0;
-    border-bottom: 1px dashed #eee;
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 1.2rem;
+    padding: 0.9rem 0;
+    border-bottom: 1px dashed #d8cdb5;
+    align-items: start;
   }
-
   .program-item:last-child { border-bottom: none; }
 
   .program-time {
-    font-size: 0.75rem;
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 0.95rem;
     color: var(--coral);
-    font-weight: bold;
-    min-width: 60px;
+    font-variant-numeric: tabular-nums;
     padding-top: 2px;
   }
-
   .program-text {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     line-height: 1.5;
   }
-
   .program-emoji { margin-right: 6px; }
 
   /* FOOTER */
   footer {
-    text-align: center;
-    padding: 4rem 2rem;
-    font-size: 0.7rem;
-    letter-spacing: 0.15em;
-    color: #aaa;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 5rem 2rem;
+    position: relative;
+    overflow: hidden;
   }
-
-  footer span { color: var(--coral); }
+  .footer-big {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 900;
+    font-size: clamp(3rem, 10vw, 8rem);
+    line-height: 0.9;
+    letter-spacing: -0.03em;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .footer-big .out {
+    -webkit-text-stroke: 2px var(--paper);
+    color: transparent;
+  }
+  .footer-meta {
+    max-width: 1200px;
+    margin: 3rem auto 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: #888;
+  }
+  .footer-meta span.hi { color: var(--coral); }
 
   /* ANIMATIONS */
   @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(40px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
-
   @keyframes fadeDown {
     from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
+    to   { opacity: 1; transform: translateY(0); }
   }
-
-  @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 0.4; }
-    50% { opacity: 1; }
+  @keyframes floaty {
+    0%, 100% { transform: translateY(0) rotate(-3deg); }
+    50%      { transform: translateY(-12px) rotate(3deg); }
   }
 
   .fade-in {
     opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(.2,.9,.2,1);
   }
-
   .fade-in.visible {
     opacity: 1;
     transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 </style>
 </head>
 <body>
 
 <div class="cursor" id="cursor"></div>
-<div class="blob blob-1"></div>
-<div class="blob blob-2"></div>
-<div class="blob blob-3"></div>
+<div class="mesh" id="mesh"></div>
+
+<div class="rail">
+  <span><span class="dot"></span>GSB · LIVE</span>
+  <span>19 — 21 · 06 · 2026</span>
+</div>
 
 <main>
 
   <!-- HERO -->
   <section class="hero">
-    <div class="hero-tag">☀️ GIUGNO 2026 · TOP SECRET 🤫</div>
-    <h1>
-      <span class="gsb">GSB</span><br>
-      <span class="year">2026</span>
-    </h1>
-    <span class="hero-emoji">🍉🕶️🌊</span>
-    <p class="hero-sub">WEEKEND · 19–21 GIUGNO · TOP SECRET 🤫</p>
-    <div class="scroll-hint">↓ SCORRI ↓</div>
+    <div class="hero-inner">
+      <div class="hero-tag parallax" data-depth="-0.04">
+        <span class="pulse"></span>GIUGNO 2026 · TOP SECRET 🤫
+      </div>
+      <h1 id="hero-title">
+        <span class="gsb" data-split>gsb</span><span class="amp" data-split>&amp;</span><span class="year" data-split>2026</span>
+      </h1>
+      <div class="hero-row">
+        <div class="hero-emoji parallax" data-depth="0.08"><span>🍉</span><span>🕶️</span><span>🌊</span></div>
+        <div class="hero-meta parallax" data-depth="-0.06">
+          <div><span class="k">WHEN</span> &nbsp; <span class="v">19 — 21 GIU</span></div>
+          <div><span class="k">WHERE</span> &nbsp; <span class="v">███████</span></div>
+          <div><span class="k">WHAT</span> &nbsp; <span class="v">TOP SECRET 🤫</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-hint">
+      <span>SCROLL</span>
+      <span class="line"></span>
+    </div>
   </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      WEEKEND <span class="star">✦</span> <span class="out">GSB</span> 2026 <span class="star">✦</span> TOP SECRET <span class="star">✦</span> 19—21 GIUGNO <span class="star">✦</span> <span class="out">SUMMER</span> EDITION <span class="star">✦</span> SHHH 🤫 <span class="star">✦</span>
+      WEEKEND <span class="star">✦</span> <span class="out">GSB</span> 2026 <span class="star">✦</span> TOP SECRET <span class="star">✦</span> 19—21 GIUGNO <span class="star">✦</span> <span class="out">SUMMER</span> EDITION <span class="star">✦</span> SHHH 🤫 <span class="star">✦</span>
+    </div>
+  </div>
 
   <!-- COUNTDOWN -->
   <section class="countdown-section fade-in">
-    <div class="section-label">⏳ manca ancora</div>
+    <div class="section-head">
+      <span class="section-num">01 —</span>
+      <span class="section-label">manca ancora</span>
+      <h2 class="section-title">Il conto alla <em>rovescia</em></h2>
+    </div>
     <div class="countdown-grid" id="countdown">
       <div class="countdown-item">
-        <span class="countdown-num" id="days">--</span>
+        <span class="countdown-num" id="days" data-flap="3"></span>
         <span class="countdown-label">GIORNI</span>
       </div>
       <div class="countdown-item">
-        <span class="countdown-num" id="hours">--</span>
+        <span class="countdown-num" id="hours" data-flap="2"></span>
         <span class="countdown-label">ORE</span>
       </div>
       <div class="countdown-item">
-        <span class="countdown-num" id="minutes">--</span>
+        <span class="countdown-num" id="minutes" data-flap="2"></span>
         <span class="countdown-label">MINUTI</span>
       </div>
       <div class="countdown-item">
-        <span class="countdown-num" id="seconds">--</span>
+        <span class="countdown-num" id="seconds" data-flap="2"></span>
         <span class="countdown-label">SECONDI</span>
       </div>
     </div>
@@ -377,8 +670,11 @@
 
   <!-- PROGRAMMA -->
   <section class="program-section fade-in">
-    <div class="section-label">📋 il programma</div>
-    <h2>Cosa ci aspetta</h2>
+    <div class="section-head">
+      <span class="section-num">02 —</span>
+      <span class="section-label">il programma</span>
+      <h2 class="section-title">Cosa ci <em>aspetta</em></h2>
+    </div>
 
     <div class="program-days">
 
@@ -391,24 +687,7 @@
           </div>
           <span class="lock-icon" id="lock-friday">🔒</span>
         </div>
-        <div class="day-content" id="content-friday">
-          <div class="program-item">
-            <span class="program-time">16:00</span>
-            <span class="program-text"><span class="program-emoji">🚗</span>Partenza — tardo pomeriggio</span>
-          </div>
-          <div class="program-item">
-            <span class="program-time">18:00</span>
-            <span class="program-text"><span class="program-emoji">🏡</span>Arrivo in struttura, sistemazione camere</span>
-          </div>
-          <div class="program-item">
-            <span class="program-time">20:30</span>
-            <span class="program-text"><span class="program-emoji">🍷</span>Cena in struttura</span>
-          </div>
-          <div class="program-item">
-            <span class="program-time">22:30</span>
-            <span class="program-text"><span class="program-emoji">🌙</span>Serata libera</span>
-          </div>
-        </div>
+        <div class="day-content" id="content-friday"></div>
         <div class="locked-msg show" id="locked-friday">
           🔒 il programma si svela il 19 giugno — a presto!
         </div>
@@ -448,7 +727,14 @@
   </section>
 
   <footer>
-    <p>☀️ <span>WEEKEND GSB 2026</span> · fatto con amore (e un po' di segretezza) 🤫</p>
+    <div class="footer-big">
+      <span class="out">WEEKEND</span><br>
+      GSB <em>2026.</em>
+    </div>
+    <div class="footer-meta">
+      <span>☀️ fatto con amore <span class="hi">(e un po' di segretezza)</span> 🤫</span>
+      <span>© 2026</span>
+    </div>
   </footer>
 
 </main>
@@ -456,22 +742,71 @@
 <script>
   // Cursor
   const cursor = document.getElementById('cursor');
+  let rafId = null;
+  let mx = 0, my = 0, cx = 0, cy = 0;
   document.addEventListener('mousemove', e => {
-    cursor.style.left = e.clientX + 'px';
-    cursor.style.top = e.clientY + 'px';
+    mx = e.clientX; my = e.clientY;
+    if (!rafId) rafId = requestAnimationFrame(followCursor);
+  });
+  function followCursor() {
+    cx += (mx - cx) * 0.25;
+    cy += (my - cy) * 0.25;
+    cursor.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%)`;
+    if (Math.abs(mx - cx) > 0.5 || Math.abs(my - cy) > 0.5) {
+      rafId = requestAnimationFrame(followCursor);
+    } else {
+      rafId = null;
+    }
+  }
+  document.querySelectorAll('.day-header, .countdown-item, .hero-tag').forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.classList.add('grow'));
+    el.addEventListener('mouseleave', () => cursor.classList.remove('grow'));
   });
 
-  // Countdown to June 19, 2026 16:00
+  // Split-flap countdown
+  function buildFlap(container) {
+    const digits = parseInt(container.dataset.flap || '2', 10);
+    container.innerHTML = '';
+    for (let i = 0; i < digits; i++) {
+      const d = document.createElement('span');
+      d.className = 'flip-digit';
+      d.innerHTML = `<span class="face current">0</span><span class="face next">0</span>`;
+      container.appendChild(d);
+    }
+  }
+  function setFlap(container, value) {
+    const str = String(value).padStart(container.children.length, '0');
+    [...container.children].forEach((digit, i) => {
+      const newChar = str[i];
+      const current = digit.querySelector('.current');
+      const next = digit.querySelector('.next');
+      if (current.textContent === newChar) return;
+      next.textContent = newChar;
+      digit.classList.remove('flipping');
+      void digit.offsetWidth;
+      digit.classList.add('flipping');
+      setTimeout(() => {
+        current.textContent = newChar;
+        digit.classList.remove('flipping');
+      }, 480);
+    });
+  }
+
+  const flapEls = {
+    days: document.getElementById('days'),
+    hours: document.getElementById('hours'),
+    minutes: document.getElementById('minutes'),
+    seconds: document.getElementById('seconds'),
+  };
+  Object.values(flapEls).forEach(buildFlap);
+
   function updateCountdown() {
     const target = new Date('2026-06-19T16:00:00');
     const now = new Date();
     const diff = target - now;
 
     if (diff <= 0) {
-      document.getElementById('days').textContent = '0';
-      document.getElementById('hours').textContent = '0';
-      document.getElementById('minutes').textContent = '0';
-      document.getElementById('seconds').textContent = '0';
+      Object.values(flapEls).forEach(el => setFlap(el, 0));
       return;
     }
 
@@ -480,14 +815,44 @@
     const m = Math.floor((diff % 3600000) / 60000);
     const s = Math.floor((diff % 60000) / 1000);
 
-    document.getElementById('days').textContent = String(d).padStart(2, '0');
-    document.getElementById('hours').textContent = String(h).padStart(2, '0');
-    document.getElementById('minutes').textContent = String(m).padStart(2, '0');
-    document.getElementById('seconds').textContent = String(s).padStart(2, '0');
+    setFlap(flapEls.days, d);
+    setFlap(flapEls.hours, h);
+    setFlap(flapEls.minutes, m);
+    setFlap(flapEls.seconds, s);
   }
-
   setInterval(updateCountdown, 1000);
   updateCountdown();
+
+  // Split-text hero
+  document.querySelectorAll('#hero-title [data-split]').forEach((el, wordIdx) => {
+    const text = el.textContent;
+    el.innerHTML = '';
+    [...text].forEach((ch, i) => {
+      const span = document.createElement('span');
+      span.className = 'split-char';
+      span.textContent = ch === ' ' ? '\u00A0' : ch;
+      span.style.animationDelay = `${0.3 + (wordIdx * 0.15) + (i * 0.06)}s`;
+      el.appendChild(span);
+    });
+  });
+
+  // Parallax mouse-move
+  const parallaxEls = document.querySelectorAll('.parallax');
+  let px = 0, py = 0, tx = 0, ty = 0;
+  window.addEventListener('mousemove', e => {
+    tx = (e.clientX / window.innerWidth - 0.5) * 2;
+    ty = (e.clientY / window.innerHeight - 0.5) * 2;
+  });
+  function parallaxLoop() {
+    px += (tx - px) * 0.08;
+    py += (ty - py) * 0.08;
+    parallaxEls.forEach(el => {
+      const d = parseFloat(el.dataset.depth || '0.05');
+      el.style.transform = `translate3d(${px * d * 100}px, ${py * d * 100}px, 0)`;
+    });
+    requestAnimationFrame(parallaxLoop);
+  }
+  parallaxLoop();
 
   // Program unlock logic
   const schedule = {
@@ -515,21 +880,18 @@
 
   function isUnlocked(day) {
     const now = new Date();
-    if (day === 'friday') return now >= new Date('2026-06-19T00:00:00');
+    if (day === 'friday')   return now >= new Date('2026-06-19T00:00:00');
     if (day === 'saturday') return now >= new Date('2026-06-20T00:00:00');
-    if (day === 'sunday') return now >= new Date('2026-06-21T00:00:00');
+    if (day === 'sunday')   return now >= new Date('2026-06-21T00:00:00');
     return true;
   }
 
   function toggleDay(day) {
     if (!isUnlocked(day)) {
-      // Shake animation for locked
-      const card = document.getElementById(`locked-${day}`);
-      card.style.animation = 'none';
-      setTimeout(() => {
-        card.style.color = '#FF6B6B';
-        setTimeout(() => card.style.color = '', 600);
-      }, 10);
+      const msg = document.getElementById(`locked-${day}`);
+      msg.classList.remove('shake');
+      void msg.offsetWidth;
+      msg.classList.add('shake');
       return;
     }
 
@@ -537,7 +899,6 @@
     const lockedMsg = document.getElementById(`locked-${day}`);
     const lock = document.getElementById(`lock-${day}`);
 
-    // Populate content
     if (!content.innerHTML.trim()) {
       const items = schedule[day];
       content.innerHTML = items.map(i => `
@@ -553,11 +914,21 @@
     lock.textContent = content.classList.contains('unlocked') ? '🔓' : '🔒';
   }
 
-  // Check unlock on load
+  // Pre-unlock + pre-populate days that are already available
   ['friday', 'saturday', 'sunday'].forEach(day => {
     if (isUnlocked(day)) {
       const lock = document.getElementById(`lock-${day}`);
       if (lock) lock.textContent = '🔓';
+      const content = document.getElementById(`content-${day}`);
+      if (content && !content.innerHTML.trim()) {
+        const items = schedule[day];
+        content.innerHTML = items.map(i => `
+          <div class="program-item">
+            <span class="program-time">${i.time}</span>
+            <span class="program-text">${i.text}</span>
+          </div>
+        `).join('');
+      }
     }
   });
 
@@ -565,7 +936,6 @@
   const observer = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.1 });
-
   document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 </script>
 </body>
