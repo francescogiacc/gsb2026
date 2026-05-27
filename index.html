@@ -544,6 +544,61 @@
     transform: translateY(0);
   }
 
+  /* STANZE */
+  .rooms-section {
+    padding: 5rem 2rem 7rem;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .rooms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 1rem;
+    margin-top: 2.5rem;
+  }
+
+  .room-card {
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 18px;
+    padding: 1.6rem 1.4rem;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    transition: transform 0.35s cubic-bezier(.2,.9,.2,1);
+  }
+  .room-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--coral);
+  }
+  .room-card:nth-child(2)::before { background: var(--sun); }
+  .room-card:nth-child(3)::before { background: var(--mint); }
+  .room-card:nth-child(4)::before { background: var(--sky); }
+  .room-card:nth-child(5)::before { background: var(--lilac); }
+  .room-card:nth-child(6)::before { background: var(--coral); }
+  .room-card:nth-child(7)::before { background: var(--sun); }
+  .room-card:hover { transform: translateY(-6px) rotate(-0.6deg); }
+
+  .room-icon { font-size: 1.6rem; }
+
+  .room-names {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 1.05rem;
+    line-height: 1.35;
+  }
+
+  @media (max-width: 620px) {
+    .rooms-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
@@ -681,6 +736,44 @@
     </div>
   </section>
 
+  <!-- STANZE -->
+  <section class="rooms-section fade-in">
+    <div class="section-head">
+      <span class="section-num">03 —</span>
+      <span class="section-label">chi dorme con chi</span>
+      <h2 class="section-title">Disposizione <em>Stanze</em></h2>
+    </div>
+    <div class="rooms-grid">
+      <div class="room-card">
+        <span class="room-icon">🛏️</span>
+        <span class="room-names">Franco & Ele</span>
+      </div>
+      <div class="room-card">
+        <span class="room-icon">🛏️</span>
+        <span class="room-names">Leo & Mary</span>
+      </div>
+      <div class="room-card">
+        <span class="room-icon">🛏️</span>
+        <span class="room-names">Beppe & Michela</span>
+      </div>
+      <div class="room-card">
+        <span class="room-icon">🛏️</span>
+        <span class="room-names">Sara & Nic</span>
+      </div>
+      <div class="room-card">
+        <span class="room-icon">🛏️</span>
+        <span class="room-names">Terri & Rommi</span>
+      </div>
+      <div class="room-card">
+        <span class="room-icon">🛏️</span>
+        <span class="room-names">Gio & Michi</span>
+      </div>
+      <div class="room-card">
+        <span class="room-icon">🛏️</span>
+        <span class="room-names">Cicci, Bea & Maura</span>
+      </div>
+    </div>
+  </section>
 
 </main>
 
@@ -802,24 +895,18 @@
   // Program unlock logic
   const schedule = {
     friday: [
-      { time: '16:00', text: '🚗 Partenza — tardo pomeriggio' },
-      { time: '18:00', text: '🏡 Arrivo in struttura, sistemazione camere' },
-      { time: '20:30', text: '🍷 Cena in struttura' },
-      { time: '22:30', text: '🌙 Serata libera' },
+      { time: '~17:00', text: '🚗 Arrivo tardo pomeriggio' },
+      { time: '~20:30', text: '🍷 Cena in struttura' },
+      { time: '~22:00', text: '🌙 Serata libera' },
     ],
     saturday: [
-      { time: '09:00', text: '☕ Colazione in struttura' },
-      { time: '10:30', text: '🎯 Attività a sorpresa' },
-      { time: '13:00', text: '🍝 Pranzo' },
-      { time: '15:00', text: '😎 Pomeriggio libero' },
-      { time: '20:00', text: '🍷 Cena di gala GSB' },
-      { time: '22:30', text: '🎉 Serata epica' },
+      { time: 'mattina', text: '🏊 Piscina' },
+      { time: '14:00', text: '🍾 Visita acetaia' },
+      { time: 'sera', text: '🍝 Cena a Bologna' },
     ],
     sunday: [
-      { time: '09:00', text: '☕ Ultima colazione insieme' },
-      { time: '10:30', text: '🌄 Attività mattutina' },
-      { time: '12:30', text: '🍕 Pranzo finale' },
-      { time: '14:30', text: '👋 Arrivederci al prossimo anno' },
+      { time: 'mattina', text: '🏊 Piscina' },
+      { time: '—', text: '🎯 Attività facoltativa in struttura' },
     ]
   };
 
