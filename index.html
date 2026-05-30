@@ -464,7 +464,7 @@
       <div class="hero-row">
         <div class="hero-meta">
           <div><span class="k">WHEN</span>&nbsp;&nbsp;<span class="v">19 — 21 GIU</span></div>
-          <div><span class="k">WHERE</span>&nbsp;&nbsp;<span class="v">Corte d'Aibo, Monteveglio</span></div>
+          <div><span class="k">WHERE</span>&nbsp;&nbsp;<span class="v" id="where-val">███████</span></div>
         </div>
       </div>
     </div>
@@ -678,6 +678,11 @@
     const content = document.getElementById(`content-${day}`);
     if (content && !content.innerHTML.trim()) content.innerHTML = renderSchedule(day);
   });
+
+  // Reveal location on June 19
+  if (new Date() >= new Date('2026-06-19T00:00:00')) {
+    document.getElementById('where-val').textContent = "Corte d'Aibo, Monteveglio";
+  }
 
   // Scroll fade-in
   const obs = new IntersectionObserver(entries => {
