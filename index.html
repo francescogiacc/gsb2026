@@ -9,486 +9,353 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,700;1,9..144,900&family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --sun: #FFD93D;
-    --coral: #FF6B6B;
-    --mint: #6BCB77;
-    --sky: #4D96FF;
-    --lilac: #B59CFF;
-    --bg: #F3EADB;
-    --bg-alt: #EADFC8;
-    --dark: #141420;
-    --ink: #1A1A2E;
-    --paper: #FFFCF5;
+    --yellow:  #F5E118;
+    --orange:  #FF4500;
+    --coral:   #FF6B6B;
+    --mint:    #4ECB71;
+    --sky:     #4D96FF;
+    --lilac:   #C77DFF;
+    --bg:      #F4EDD8;
+    --ink:     #1C1208;
+    --paper:   #FFFCF0;
+    --muted:   #7a6040;
+    --shadow:  5px 5px 0 #1C1208;
+    --shadow-lg: 8px 8px 0 #1C1208;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
   html { scroll-behavior: smooth; }
 
   body {
-    background: var(--bg);
+    background-color: var(--bg);
+    background-image: radial-gradient(circle, rgba(28,18,8,0.11) 1.5px, transparent 1.5px);
+    background-size: 22px 22px;
     font-family: 'Space Mono', monospace;
     color: var(--ink);
     overflow-x: hidden;
-    position: relative;
   }
 
-  /* GRAIN + PAPER TEXTURE */
   body::before {
     content: '';
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 100;
-    opacity: 0.08;
-    mix-blend-mode: multiply;
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 200;
+    opacity: 0.035; mix-blend-mode: multiply;
     background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.9 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
   }
 
-  /* Gradient mesh background */
-  .mesh {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    background:
-      radial-gradient(60% 40% at 10% 20%, rgba(255,107,107,0.35), transparent 60%),
-      radial-gradient(50% 50% at 90% 10%, rgba(255,217,61,0.45), transparent 60%),
-      radial-gradient(40% 40% at 80% 80%, rgba(107,203,119,0.28), transparent 60%),
-      radial-gradient(35% 35% at 20% 90%, rgba(77,150,255,0.28), transparent 60%);
-    filter: blur(40px) saturate(120%);
-    animation: meshDrift 20s ease-in-out infinite alternate;
-  }
-
-  @keyframes meshDrift {
-    0%   { transform: translate3d(0,0,0) scale(1); }
-    100% { transform: translate3d(-3%, 2%, 0) scale(1.06); }
-  }
-
-  /* Custom cursor */
-  .cursor {
-    width: 14px; height: 14px;
-    background: var(--ink);
-    border-radius: 50%;
-    position: fixed;
-    top: 0; left: 0;
-    pointer-events: none;
-    z-index: 9999;
-    transform: translate(-50%, -50%);
-    transition: width 0.25s cubic-bezier(.2,.9,.2,1), height 0.25s cubic-bezier(.2,.9,.2,1), background 0.2s, opacity 0.2s;
-    mix-blend-mode: difference;
-  }
-  .cursor.grow { width: 60px; height: 60px; background: var(--coral); mix-blend-mode: normal; opacity: 0.85; }
-  @media (hover: none) { .cursor { display: none; } body { cursor: auto; } }
-  @media (hover: hover) { body { cursor: none; } a, button, .day-header, .countdown-item { cursor: none; } }
-
   main { position: relative; z-index: 2; }
 
-  /* Sticky top rail */
+  /* ── RAIL ── */
   .rail {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 50;
-    display: flex;
-    justify-content: space-between;
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    display: flex; justify-content: space-between;
     padding: 1rem 1.5rem;
-    font-size: 0.65rem;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--ink);
-    mix-blend-mode: difference;
-    color: #fff;
-    pointer-events: none;
+    font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--ink); pointer-events: none;
+    mix-blend-mode: multiply;
   }
   .rail .dot {
     width: 8px; height: 8px; border-radius: 50%;
-    background: var(--coral);
-    display: inline-block;
-    margin-right: 0.5rem;
+    background: var(--orange); display: inline-block;
+    margin-right: 0.5rem; vertical-align: middle;
     animation: blink 1.4s ease-in-out infinite;
-    vertical-align: middle;
   }
   @keyframes blink { 50% { opacity: 0.2; } }
 
-  /* MARQUEE */
+  /* ── MARQUEE ── */
   .marquee {
-    border-top: 2px solid var(--ink);
-    border-bottom: 2px solid var(--ink);
-    background: var(--ink);
-    color: var(--sun);
-    overflow: hidden;
-    white-space: nowrap;
-    padding: 0.9rem 0;
-    font-family: 'Fraunces', serif;
-    font-style: italic;
-    font-weight: 900;
-    font-size: clamp(1.6rem, 4vw, 2.8rem);
-    letter-spacing: -0.01em;
-    position: relative;
+    border-top: 3px solid var(--ink);
+    border-bottom: 3px solid var(--ink);
+    background: var(--ink); color: var(--yellow);
+    overflow: hidden; white-space: nowrap; padding: 0.9rem 0;
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-weight: 900; font-size: clamp(1.6rem, 4vw, 2.8rem);
   }
   .marquee-track {
     display: inline-block;
     animation: scroll 30s linear infinite;
     padding-left: 100%;
   }
-  .marquee span.star { color: var(--coral); margin: 0 1.2rem; font-style: normal; }
-  .marquee span.out { -webkit-text-stroke: 1.5px var(--sun); color: transparent; }
+  .marquee span.star { color: var(--orange); margin: 0 1.2rem; font-style: normal; }
+  .marquee span.out  { -webkit-text-stroke: 1.5px var(--yellow); color: transparent; }
   @keyframes scroll {
     from { transform: translateX(0); }
     to   { transform: translateX(-100%); }
   }
 
-  /* HERO */
+  /* ── STRIPE DIVIDER ── */
+  .stripe-divider {
+    height: 14px;
+    background: repeating-linear-gradient(
+      90deg,
+      var(--ink) 0px, var(--ink) 20px,
+      var(--yellow) 20px, var(--yellow) 40px
+    );
+    border-top: 2.5px solid var(--ink);
+    border-bottom: 2.5px solid var(--ink);
+  }
+
+  /* ── HERO ── */
   .hero {
     min-height: 100vh;
-    display: grid;
-    grid-template-columns: 1fr;
-    align-items: center;
-    padding: 6rem 2rem 3rem;
+    padding: 6rem 2.5rem 3rem;
     position: relative;
+    background: var(--yellow);
+    border-bottom: 3px solid var(--ink);
+    overflow: hidden;
+    display: grid; align-items: center;
   }
+  .hero::after {
+    content: '';
+    position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent, transparent 38px,
+      rgba(28,18,8,0.04) 38px, rgba(28,18,8,0.04) 40px
+    );
+  }
+
   .hero-inner {
-    max-width: 1200px;
-    width: 100%;
-    margin: 0 auto;
-    position: relative;
+    max-width: 1200px; width: 100%;
+    margin: 0 auto; position: relative; z-index: 1;
   }
+
+  /* spinning sticker */
+  .hero-sticker {
+    position: absolute; top: 5.5rem; right: 2.5rem;
+    width: 136px; height: 136px;
+    background: var(--orange); color: var(--paper);
+    border: 3px solid var(--ink);
+    box-shadow: var(--shadow);
+    border-radius: 50%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 1rem;
+    animation: spinSlow 22s linear infinite;
+    font-size: 0.58rem; letter-spacing: 0.22em; font-weight: 700;
+    line-height: 1.7; z-index: 2;
+  }
+  .hero-sticker .big {
+    font-family: 'Fraunces', serif;
+    font-size: 1.5rem; font-weight: 900; font-style: italic;
+    color: var(--yellow); display: block;
+    line-height: 1; letter-spacing: -0.02em; margin: 2px 0;
+  }
+  @keyframes spinSlow {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
   .hero-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    background: var(--ink);
-    color: var(--sun);
-    font-size: 0.65rem;
-    letter-spacing: 0.25em;
-    padding: 8px 14px;
-    border-radius: 2px;
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    background: var(--ink); color: var(--yellow);
+    font-size: 0.65rem; letter-spacing: 0.25em; font-weight: 700;
+    padding: 7px 18px; border-radius: 100px;
+    border: 2px solid var(--ink);
     margin-bottom: 2rem;
     animation: fadeDown 0.9s ease both;
   }
   .hero-tag .pulse {
-    width: 6px; height: 6px; background: var(--coral);
+    width: 6px; height: 6px; background: var(--orange);
     border-radius: 50%;
     animation: pulseDot 1.2s ease-in-out infinite;
   }
   @keyframes pulseDot {
-    0%, 100% { box-shadow: 0 0 0 0 var(--coral); }
-    50%      { box-shadow: 0 0 0 6px rgba(255,107,107,0); }
+    0%, 100% { box-shadow: 0 0 0 0 var(--orange); }
+    50%      { box-shadow: 0 0 0 6px rgba(255,69,0,0); }
   }
 
   .hero h1 {
-    font-family: 'Fraunces', serif;
-    font-weight: 900;
-    font-size: clamp(4.5rem, 18vw, 15rem);
-    line-height: 0.85;
-    letter-spacing: -0.04em;
-    animation: fadeUp 0.9s ease 0.2s both;
-    position: relative;
+    font-family: 'Fraunces', serif; font-weight: 900;
+    font-size: clamp(5.5rem, 21vw, 18rem);
+    line-height: 0.82; letter-spacing: -0.04em;
+    animation: fadeUp 0.9s ease 0.2s both; color: var(--ink);
   }
-  .hero h1 .gsb {
-    display: inline-block;
-    color: var(--coral);
-    font-style: italic;
-  }
-  .hero h1 .year {
-    display: inline-block;
-    -webkit-text-stroke: 2px var(--ink);
-    color: transparent;
-    margin-left: 0.1em;
-  }
+  .hero h1 .gsb  { display: block; font-style: italic; }
+  .hero h1 .year { display: block; -webkit-text-stroke: 3px var(--ink); color: transparent; }
+
   .hero-row {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 2rem;
-    flex-wrap: wrap;
-    margin-top: 2rem;
+    display: flex; align-items: flex-end;
+    justify-content: space-between; gap: 2rem;
+    flex-wrap: wrap; margin-top: 2.5rem;
     animation: fadeUp 0.9s ease 0.45s both;
   }
 
-  .hero-emoji {
-    font-size: clamp(2.5rem, 7vw, 5rem);
-    line-height: 1;
-    letter-spacing: 0.15em;
-    display: inline-block;
+  .hero-pills {
+    display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center;
   }
-  .hero-emoji span {
-    display: inline-block;
+  .hero-pill {
+    background: var(--ink); color: var(--yellow);
+    font-size: 0.68rem; letter-spacing: 0.18em; font-weight: 700;
+    padding: 7px 16px; border-radius: 100px;
+    border: 2px solid var(--ink);
+    box-shadow: 3px 3px 0 rgba(28,18,8,0.25);
     animation: floaty 3.2s ease-in-out infinite;
   }
-  .hero-emoji span:nth-child(2) { animation-delay: 0.3s; }
-  .hero-emoji span:nth-child(3) { animation-delay: 0.6s; }
+  .hero-pill:nth-child(2) { animation-delay: 0.4s; background: var(--paper); color: var(--ink); }
+  .hero-pill:nth-child(3) { animation-delay: 0.8s; }
 
   .hero-meta {
-    text-align: right;
-    font-size: 0.75rem;
-    letter-spacing: 0.12em;
-    line-height: 1.8;
-    color: var(--ink);
+    text-align: right; font-size: 0.75rem;
+    letter-spacing: 0.12em; line-height: 1.9;
+    background: var(--paper);
+    border: 2.5px solid var(--ink);
+    box-shadow: var(--shadow);
+    padding: 0.9rem 1.4rem; border-radius: 10px;
   }
-  .hero-meta .k { color: #888; }
+  .hero-meta .k { color: var(--muted); }
   .hero-meta .v { font-weight: 700; }
 
   .scroll-hint {
-    position: absolute;
-    bottom: 2rem;
-    left: 50%;
+    position: absolute; bottom: 2rem; left: 50%;
     transform: translateX(-50%);
-    font-size: 0.65rem;
-    letter-spacing: 0.3em;
-    color: var(--ink);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.6rem;
+    font-size: 0.65rem; letter-spacing: 0.3em; color: var(--ink);
+    display: flex; flex-direction: column; align-items: center; gap: 0.6rem;
   }
   .scroll-hint .line {
-    width: 1px; height: 40px;
-    background: var(--ink);
+    width: 2px; height: 40px; background: var(--ink);
     transform-origin: top;
     animation: lineGrow 1.8s ease-in-out infinite;
   }
   @keyframes lineGrow {
     0%, 100% { transform: scaleY(0.2); opacity: 0.3; }
-    50%      { transform: scaleY(1); opacity: 1; }
+    50%       { transform: scaleY(1); opacity: 1; }
   }
 
-  /* COUNTDOWN */
-  .countdown-section {
-    padding: 7rem 2rem 5rem;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
+  /* ── SECTION COMMON ── */
   .section-head {
-    display: flex;
-    align-items: baseline;
-    gap: 1.2rem;
-    margin-bottom: 2.5rem;
-    flex-wrap: wrap;
+    display: flex; align-items: baseline;
+    gap: 1.2rem; margin-bottom: 2.5rem; flex-wrap: wrap;
   }
   .section-num {
-    font-family: 'Fraunces', serif;
-    font-weight: 900;
-    font-style: italic;
-    font-size: 2rem;
-    color: var(--coral);
+    font-family: 'Fraunces', serif; font-weight: 900; font-style: italic;
+    font-size: 0.95rem; letter-spacing: 0.04em;
+    background: var(--orange); color: var(--paper);
+    padding: 4px 16px; border-radius: 100px;
+    border: 2px solid var(--ink); box-shadow: 3px 3px 0 var(--ink);
   }
   .section-label {
-    font-size: 0.7rem;
-    letter-spacing: 0.3em;
-    color: #888;
-    text-transform: uppercase;
+    font-size: 0.68rem; letter-spacing: 0.28em;
+    color: var(--muted); text-transform: uppercase;
   }
   .section-title {
-    font-family: 'Fraunces', serif;
-    font-weight: 900;
+    font-family: 'Fraunces', serif; font-weight: 900;
     font-size: clamp(2rem, 5vw, 3.5rem);
-    line-height: 1;
-    letter-spacing: -0.02em;
-    flex: 1 1 100%;
-    margin-top: 0.3rem;
+    line-height: 1; letter-spacing: -0.02em;
+    flex: 1 1 100%; margin-top: 0.3rem;
   }
-  .section-title em {
-    font-style: italic;
-    color: var(--coral);
-    font-weight: 700;
-  }
+  .section-title em { font-style: italic; color: var(--orange); }
 
+  /* ── COUNTDOWN ── */
+  .countdown-section {
+    padding: 7rem 2.5rem 5rem;
+    max-width: 1200px; margin: 0 auto;
+  }
   .countdown-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.1rem;
   }
   .countdown-item {
-    background: var(--ink);
-    color: var(--paper);
-    border-radius: 18px;
+    background: var(--paper);
+    border: 2.5px solid var(--ink);
+    box-shadow: var(--shadow);
+    border-radius: 16px;
     padding: 2rem 1rem 1.2rem;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.35s cubic-bezier(.2,.9,.2,1);
+    text-align: center; position: relative; overflow: hidden;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
   }
   .countdown-item::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 4px;
-    background: var(--coral);
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 5px; background: var(--orange);
   }
-  .countdown-item:nth-child(2)::before { background: var(--sun); }
+  .countdown-item:nth-child(2)::before { background: var(--yellow); }
   .countdown-item:nth-child(3)::before { background: var(--mint); }
   .countdown-item:nth-child(4)::before { background: var(--sky); }
-  .countdown-item:hover { transform: translateY(-6px) rotate(-0.6deg); }
+  .countdown-item:hover { transform: translate(-2px,-2px); box-shadow: var(--shadow-lg); }
 
   .countdown-num {
-    font-family: 'Fraunces', serif;
-    font-weight: 900;
-    font-size: clamp(2.8rem, 7vw, 5rem);
-    line-height: 1;
-    display: flex;
-    justify-content: center;
-    gap: 4px;
-    letter-spacing: -0.02em;
-    font-variant-numeric: tabular-nums;
+    font-family: 'Fraunces', serif; font-weight: 900;
+    font-size: clamp(2.8rem, 7vw, 5rem); line-height: 1;
+    display: flex; justify-content: center; gap: 4px;
+    letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
   }
-
-  /* Split-flap digit */
   .flip-digit {
-    position: relative;
-    display: inline-block;
-    width: 0.65em;
-    height: 1em;
-    perspective: 400px;
-    overflow: hidden;
-    background: #0a0a14;
-    border-radius: 6px;
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
+    position: relative; display: inline-block;
+    width: 0.65em; height: 1em;
+    perspective: 400px; overflow: hidden;
+    background: var(--bg); border-radius: 4px;
+    border: 1.5px solid rgba(28,18,8,0.12);
   }
   .flip-digit .face {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    backface-visibility: hidden;
-    transform-origin: center;
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    backface-visibility: hidden; transform-origin: center;
   }
   .flip-digit .current { z-index: 1; }
-  .flip-digit .next {
-    transform: rotateX(90deg);
-    z-index: 2;
-  }
-  .flip-digit.flipping .current {
-    animation: flipOut 0.5s ease-in forwards;
-  }
-  .flip-digit.flipping .next {
-    animation: flipIn 0.5s ease-out forwards;
-  }
-  @keyframes flipOut {
-    0%   { transform: rotateX(0);   }
-    100% { transform: rotateX(-90deg); }
-  }
-  @keyframes flipIn {
-    0%   { transform: rotateX(90deg); }
-    100% { transform: rotateX(0);    }
-  }
-
-  /* Split-text hero */
-  .split-char {
-    display: inline-block;
-    opacity: 0;
-    transform: translateY(0.6em) rotate(8deg);
-    animation: charIn 0.7s cubic-bezier(.2,.9,.2,1) forwards;
-  }
-  @keyframes charIn {
-    to { opacity: 1; transform: translateY(0) rotate(0); }
-  }
-
-  /* Parallax layers */
-  .parallax {
-    transition: transform 0.4s cubic-bezier(.2,.9,.2,1);
-    will-change: transform;
-  }
+  .flip-digit .next { transform: rotateX(90deg); z-index: 2; }
+  .flip-digit.flipping .current { animation: flipOut 0.5s ease-in forwards; }
+  .flip-digit.flipping .next    { animation: flipIn 0.5s ease-out forwards; }
+  @keyframes flipOut { 0% { transform: rotateX(0); }    100% { transform: rotateX(-90deg); } }
+  @keyframes flipIn  { 0% { transform: rotateX(90deg); } 100% { transform: rotateX(0); } }
   .countdown-label {
-    font-size: 0.6rem;
-    letter-spacing: 0.3em;
-    color: #888;
-    margin-top: 0.6rem;
-    display: block;
+    font-size: 0.6rem; letter-spacing: 0.3em; color: var(--muted);
+    margin-top: 0.8rem; display: block; font-weight: 700;
   }
 
-  @media (max-width: 620px) {
-    .countdown-grid { grid-template-columns: repeat(2, 1fr); }
-  }
+  @media (max-width: 620px) { .countdown-grid { grid-template-columns: repeat(2, 1fr); } }
 
-  /* PROGRAMMA */
-  .program-section {
-    padding: 5rem 2rem 7rem;
-    max-width: 1000px;
-    margin: 0 auto;
-  }
-
-  .program-days {
-    margin-top: 2.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.2rem;
-  }
+  /* ── PROGRAMMA ── */
+  .program-section { padding: 5rem 2.5rem 7rem; max-width: 1000px; margin: 0 auto; }
+  .program-days { margin-top: 2.5rem; display: flex; flex-direction: column; gap: 1.4rem; }
 
   .day-card {
     background: var(--paper);
-    border: 2px solid var(--ink);
-    border-radius: 18px;
-    overflow: hidden;
-    transition: transform 0.3s cubic-bezier(.2,.9,.2,1), box-shadow 0.3s;
+    border: 2.5px solid var(--ink);
+    box-shadow: var(--shadow);
+    border-radius: 16px; overflow: hidden;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
   }
-  .day-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 10px 10px 0 var(--ink);
-  }
+  .day-card:hover { transform: translate(-2px,-2px); box-shadow: var(--shadow-lg); }
 
   .day-header {
     padding: 1.4rem 1.8rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    user-select: none;
-    background: var(--ink);
-    color: var(--paper);
-    gap: 1rem;
+    display: flex; justify-content: space-between; align-items: center;
+    user-select: none; background: var(--ink); color: var(--paper); gap: 1rem;
+    cursor: pointer;
   }
-  .day-header-left {
-    display: flex;
-    align-items: center;
-    gap: 1.2rem;
-    flex-wrap: wrap;
-  }
+  .day-header-left { display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; }
+
   .day-tag {
-    background: var(--sun);
-    color: var(--ink);
-    font-size: 0.65rem;
-    letter-spacing: 0.2em;
-    padding: 5px 12px;
-    border-radius: 2px;
-    font-weight: bold;
-    font-family: 'Space Mono', monospace;
+    background: var(--yellow); color: var(--ink);
+    font-size: 0.65rem; letter-spacing: 0.2em;
+    padding: 5px 14px; border-radius: 100px;
+    font-weight: 700; font-family: 'Space Mono', monospace;
   }
   .day-card:nth-child(2) .day-tag { background: var(--mint); }
-  .day-card:nth-child(3) .day-tag { background: var(--lilac); color: var(--ink); }
+  .day-card:nth-child(3) .day-tag { background: var(--sky); color: var(--paper); }
 
-  .day-title {
-    font-family: 'Fraunces', serif;
-    font-size: 1.3rem;
-    font-weight: 700;
-    font-style: italic;
-  }
+  .day-title { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 700; font-style: italic; }
 
   .lock-icon {
-    font-size: 1.4rem;
-    transition: transform 0.3s;
+    font-size: 0.6rem; letter-spacing: 0.15em; font-weight: 700;
+    background: rgba(255,255,255,0.12);
+    padding: 4px 10px; border-radius: 100px;
+    border: 1px solid rgba(255,255,255,0.2);
+    white-space: nowrap;
   }
 
   .day-content {
-    padding: 0;
-    max-height: 0;
-    overflow: hidden;
+    padding: 0; max-height: 0; overflow: hidden;
     transition: max-height 0.5s cubic-bezier(.2,.9,.2,1), padding 0.3s;
   }
   .day-content.unlocked { padding: 1.6rem 1.8rem; max-height: 800px; }
 
   .locked-msg {
-    text-align: center;
-    padding: 1.8rem;
-    color: #888;
-    font-size: 0.75rem;
-    letter-spacing: 0.15em;
-    display: none;
-    font-family: 'Fraunces', serif;
-    font-style: italic;
+    text-align: center; padding: 1.8rem; color: var(--muted);
+    font-size: 0.75rem; letter-spacing: 0.15em; display: none;
+    font-family: 'Fraunces', serif; font-style: italic;
   }
   .locked-msg.show { display: block; }
-  .locked-msg.shake { animation: shake 0.4s ease; color: var(--coral) !important; }
+  .locked-msg.shake { animation: shake 0.4s ease; color: var(--orange) !important; }
   @keyframes shake {
     0%, 100% { transform: translateX(0); }
     20%, 60% { transform: translateX(-6px); }
@@ -496,122 +363,81 @@
   }
 
   .program-item {
-    display: grid;
-    grid-template-columns: 70px 1fr;
-    gap: 1.2rem;
-    padding: 0.9rem 0;
-    border-bottom: 1px dashed #d8cdb5;
-    align-items: start;
+    display: grid; grid-template-columns: 70px 1fr;
+    gap: 1.2rem; padding: 0.9rem 0;
+    border-bottom: 1px dashed rgba(28,18,8,0.18);
+    align-items: center;
   }
   .program-item:last-child { border-bottom: none; }
-
   .program-time {
-    font-family: 'Fraunces', serif;
-    font-weight: 700;
-    font-style: italic;
-    font-size: 0.95rem;
-    color: var(--coral);
+    font-family: 'Fraunces', serif; font-weight: 700; font-style: italic;
+    font-size: 0.95rem; color: var(--orange);
     font-variant-numeric: tabular-nums;
-    padding-top: 2px;
   }
-  .program-text {
-    font-size: 0.9rem;
-    line-height: 1.5;
-  }
-  .program-emoji { margin-right: 6px; }
+  .program-text { font-size: 0.9rem; line-height: 1.5; }
 
-  /* ANIMATIONS */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(40px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes fadeDown {
-    from { opacity: 0; transform: translateY(-20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes floaty {
-    0%, 100% { transform: translateY(0) rotate(-3deg); }
-    50%      { transform: translateY(-12px) rotate(3deg); }
+  /* always-redacted item */
+  .item-secret .program-text {
+    background: var(--ink);
+    color: transparent;
+    border-radius: 4px;
+    padding: 3px 8px;
+    user-select: none;
+    letter-spacing: 0.08em;
   }
 
-  .fade-in {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(.2,.9,.2,1);
-  }
-  .fade-in.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  /* STANZE */
-  .rooms-section {
-    padding: 5rem 2rem 7rem;
-    max-width: 1000px;
-    margin: 0 auto;
-  }
-
+  /* ── STANZE ── */
+  .rooms-section { padding: 5rem 2.5rem 7rem; max-width: 1000px; margin: 0 auto; }
   .rooms-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-    gap: 1rem;
-    margin-top: 2.5rem;
+    gap: 1.2rem; margin-top: 2.5rem;
   }
-
   .room-card {
-    background: var(--ink);
-    color: var(--paper);
-    border-radius: 18px;
-    padding: 1.6rem 1.4rem;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    gap: 0.7rem;
-    transition: transform 0.35s cubic-bezier(.2,.9,.2,1);
+    background: var(--yellow);
+    border: 2.5px solid var(--ink);
+    box-shadow: var(--shadow);
+    border-radius: 16px; padding: 1.6rem 1.4rem;
+    display: flex; flex-direction: column; gap: 0.4rem;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
   }
-  .room-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 4px;
-    background: var(--coral);
+  .room-card:nth-child(2) { background: #FFD0D0; }
+  .room-card:nth-child(3) { background: #C5F7D4; }
+  .room-card:nth-child(4) { background: #C5DCFF; }
+  .room-card:nth-child(5) { background: #EAD5FF; }
+  .room-card:nth-child(6) { background: #FFE4B5; }
+  .room-card:nth-child(7) { background: #FFD0D0; }
+  .room-card:hover { transform: translate(-2px,-2px); box-shadow: var(--shadow-lg); }
+
+  .room-num {
+    font-size: 0.58rem; letter-spacing: 0.25em; font-weight: 700;
+    color: var(--muted); text-transform: uppercase;
   }
-  .room-card:nth-child(2)::before { background: var(--sun); }
-  .room-card:nth-child(3)::before { background: var(--mint); }
-  .room-card:nth-child(4)::before { background: var(--sky); }
-  .room-card:nth-child(5)::before { background: var(--lilac); }
-  .room-card:nth-child(6)::before { background: var(--coral); }
-  .room-card:nth-child(7)::before { background: var(--sun); }
-  .room-card:hover { transform: translateY(-6px) rotate(-0.6deg); }
-
-  .room-icon { font-size: 1.6rem; }
-
   .room-names {
-    font-family: 'Fraunces', serif;
-    font-weight: 700;
-    font-style: italic;
-    font-size: 1.05rem;
-    line-height: 1.35;
+    font-family: 'Fraunces', serif; font-weight: 700; font-style: italic;
+    font-size: 1.1rem; line-height: 1.35; color: var(--ink);
   }
 
-  @media (max-width: 620px) {
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp   { from { opacity:0; transform:translateY(40px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes floaty   { 0%,100% { transform:translateY(0) rotate(-2deg); } 50% { transform:translateY(-10px) rotate(2deg); } }
+
+  .fade-in { opacity:0; transform:translateY(30px); transition: opacity .8s ease, transform .8s cubic-bezier(.2,.9,.2,1); }
+  .fade-in.visible { opacity:1; transform:translateY(0); }
+
+  @media (max-width: 600px) {
+    .hero-sticker { width: 100px; height: 100px; font-size: 0.5rem; top: 4.5rem; right: 1rem; }
+    .hero-sticker .big { font-size: 1.1rem; }
     .rooms-grid { grid-template-columns: repeat(2, 1fr); }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-    }
+    *, *::before, *::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
   }
 </style>
 </head>
 <body>
-
-<div class="cursor" id="cursor"></div>
-<div class="mesh" id="mesh"></div>
 
 <div class="rail">
   <span><span class="dot"></span>GSB · LIVE</span>
@@ -622,19 +448,28 @@
 
   <!-- HERO -->
   <section class="hero">
+    <div class="hero-sticker" aria-hidden="true">
+      <span>ESTATE</span>
+      <span class="big">2026</span>
+      <span>★ GSB ★</span>
+    </div>
     <div class="hero-inner">
-      <div class="hero-tag parallax" data-depth="-0.04">
+      <div class="hero-tag">
         <span class="pulse"></span>GIUGNO 2026
       </div>
-      <h1 id="hero-title">
-        <span class="gsb" data-split>gsb</span><span class="year" data-split>2026</span>
+      <h1>
+        <span class="gsb">gsb</span>
+        <span class="year">2026</span>
       </h1>
       <div class="hero-row">
-        <div class="hero-emoji parallax" data-depth="0.08"><span>🍉</span><span>🕶️</span><span>🌊</span></div>
-        <div class="hero-meta parallax" data-depth="-0.06">
-          <div><span class="k">WHEN</span> &nbsp; <span class="v">19 — 21 GIU</span></div>
-          <div><span class="k">WHERE</span> &nbsp; <span class="v">███████</span></div>
-
+        <div class="hero-pills">
+          <span class="hero-pill">MARE</span>
+          <span class="hero-pill">SOLE</span>
+          <span class="hero-pill">CHILL</span>
+        </div>
+        <div class="hero-meta">
+          <div><span class="k">WHEN</span>&nbsp;&nbsp;<span class="v">19 — 21 GIU</span></div>
+          <div><span class="k">WHERE</span>&nbsp;&nbsp;<span class="v">███████</span></div>
         </div>
       </div>
     </div>
@@ -654,7 +489,7 @@
   <!-- COUNTDOWN -->
   <section class="countdown-section fade-in">
     <div class="section-head">
-      <span class="section-num">01 —</span>
+      <span class="section-num">01</span>
       <span class="section-label">manca ancora</span>
       <h2 class="section-title">Il conto alla <em>rovescia</em></h2>
     </div>
@@ -678,297 +513,185 @@
     </div>
   </section>
 
+  <div class="stripe-divider" aria-hidden="true"></div>
+
   <!-- PROGRAMMA -->
   <section class="program-section fade-in">
     <div class="section-head">
-      <span class="section-num">02 —</span>
+      <span class="section-num">02</span>
       <span class="section-label">il programma</span>
       <h2 class="section-title">Cosa ci <em>aspetta</em></h2>
     </div>
-
     <div class="program-days">
 
-      <!-- VENERDÌ -->
       <div class="day-card">
         <div class="day-header" onclick="toggleDay('friday')">
           <div class="day-header-left">
             <span class="day-tag">VEN 19</span>
             <span class="day-title">Giorno di arrivo</span>
           </div>
-          <span class="lock-icon" id="lock-friday">🔒</span>
+          <span class="lock-icon" id="lock-friday">CHIUSO</span>
         </div>
         <div class="day-content" id="content-friday"></div>
-        <div class="locked-msg show" id="locked-friday">
-          🔒 il programma si svela il 19 giugno — a presto!
-        </div>
+        <div class="locked-msg show" id="locked-friday">il programma si svela il 19 giugno — a presto!</div>
       </div>
 
-      <!-- SABATO -->
       <div class="day-card">
         <div class="day-header" onclick="toggleDay('saturday')">
           <div class="day-header-left">
             <span class="day-tag">SAB 20</span>
             <span class="day-title">Giornata piena</span>
           </div>
-          <span class="lock-icon" id="lock-saturday">🔒</span>
+          <span class="lock-icon" id="lock-saturday">CHIUSO</span>
         </div>
         <div class="day-content" id="content-saturday"></div>
-        <div class="locked-msg show" id="locked-saturday">
-          🔒 il programma si svela il 20 giugno — a presto!
-        </div>
+        <div class="locked-msg show" id="locked-saturday">il programma si svela il 20 giugno — a presto!</div>
       </div>
 
-      <!-- DOMENICA -->
       <div class="day-card">
         <div class="day-header" onclick="toggleDay('sunday')">
           <div class="day-header-left">
             <span class="day-tag">DOM 21</span>
             <span class="day-title">Gran finale</span>
           </div>
-          <span class="lock-icon" id="lock-sunday">🔒</span>
+          <span class="lock-icon" id="lock-sunday">CHIUSO</span>
         </div>
         <div class="day-content" id="content-sunday"></div>
-        <div class="locked-msg show" id="locked-sunday">
-          🔒 il programma si svela il 21 giugno — a presto!
-        </div>
+        <div class="locked-msg show" id="locked-sunday">il programma si svela il 21 giugno — a presto!</div>
       </div>
 
     </div>
   </section>
 
+  <div class="stripe-divider" aria-hidden="true"></div>
+
   <!-- STANZE -->
   <section class="rooms-section fade-in">
     <div class="section-head">
-      <span class="section-num">03 —</span>
+      <span class="section-num">03</span>
       <span class="section-label">chi dorme con chi</span>
       <h2 class="section-title">Disposizione <em>Stanze</em></h2>
     </div>
     <div class="rooms-grid">
-      <div class="room-card">
-        <span class="room-icon">🛏️</span>
-        <span class="room-names">Franco & Ele</span>
-      </div>
-      <div class="room-card">
-        <span class="room-icon">🛏️</span>
-        <span class="room-names">Leo & Mary</span>
-      </div>
-      <div class="room-card">
-        <span class="room-icon">🛏️</span>
-        <span class="room-names">Beppe & Michela</span>
-      </div>
-      <div class="room-card">
-        <span class="room-icon">🛏️</span>
-        <span class="room-names">Sara & Nic</span>
-      </div>
-      <div class="room-card">
-        <span class="room-icon">🛏️</span>
-        <span class="room-names">Terri & Rommi</span>
-      </div>
-      <div class="room-card">
-        <span class="room-icon">🛏️</span>
-        <span class="room-names">Gio, Michi & Jody</span>
-      </div>
-      <div class="room-card">
-        <span class="room-icon">🛏️</span>
-        <span class="room-names">Cicci, Bea & Maura</span>
-      </div>
+      <div class="room-card"><span class="room-num">stanza 01</span><span class="room-names">Franco & Ele</span></div>
+      <div class="room-card"><span class="room-num">stanza 02</span><span class="room-names">Leo & Mary</span></div>
+      <div class="room-card"><span class="room-num">stanza 03</span><span class="room-names">Beppe & Michela</span></div>
+      <div class="room-card"><span class="room-num">stanza 04</span><span class="room-names">Sara & Nic</span></div>
+      <div class="room-card"><span class="room-num">stanza 05</span><span class="room-names">Terri & Rommi</span></div>
+      <div class="room-card"><span class="room-num">stanza 06</span><span class="room-names">Gio, Michi & Jody</span></div>
+      <div class="room-card"><span class="room-num">stanza 07</span><span class="room-names">Cicci, Bea & Maura</span></div>
     </div>
   </section>
 
 </main>
 
 <script>
-  // Cursor
-  const cursor = document.getElementById('cursor');
-  let rafId = null;
-  let mx = 0, my = 0, cx = 0, cy = 0;
-  document.addEventListener('mousemove', e => {
-    mx = e.clientX; my = e.clientY;
-    if (!rafId) rafId = requestAnimationFrame(followCursor);
-  });
-  function followCursor() {
-    cx += (mx - cx) * 0.25;
-    cy += (my - cy) * 0.25;
-    cursor.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%)`;
-    if (Math.abs(mx - cx) > 0.5 || Math.abs(my - cy) > 0.5) {
-      rafId = requestAnimationFrame(followCursor);
-    } else {
-      rafId = null;
-    }
-  }
-  document.querySelectorAll('.day-header, .countdown-item, .hero-tag').forEach(el => {
-    el.addEventListener('mouseenter', () => cursor.classList.add('grow'));
-    el.addEventListener('mouseleave', () => cursor.classList.remove('grow'));
-  });
-
   // Split-flap countdown
-  function buildFlap(container) {
-    const digits = parseInt(container.dataset.flap || '2', 10);
-    container.innerHTML = '';
-    for (let i = 0; i < digits; i++) {
-      const d = document.createElement('span');
-      d.className = 'flip-digit';
-      d.innerHTML = `<span class="face current">0</span><span class="face next">0</span>`;
-      container.appendChild(d);
+  function buildFlap(c) {
+    const d = parseInt(c.dataset.flap || '2', 10);
+    c.innerHTML = '';
+    for (let i = 0; i < d; i++) {
+      const el = document.createElement('span');
+      el.className = 'flip-digit';
+      el.innerHTML = `<span class="face current">0</span><span class="face next">0</span>`;
+      c.appendChild(el);
     }
   }
-  function setFlap(container, value) {
-    const str = String(value).padStart(container.children.length, '0');
-    [...container.children].forEach((digit, i) => {
-      const newChar = str[i];
-      const current = digit.querySelector('.current');
-      const next = digit.querySelector('.next');
-      if (current.textContent === newChar) return;
-      next.textContent = newChar;
+  function setFlap(c, v) {
+    const s = String(v).padStart(c.children.length, '0');
+    [...c.children].forEach((digit, i) => {
+      const ch = s[i];
+      const cur = digit.querySelector('.current');
+      const nxt = digit.querySelector('.next');
+      if (cur.textContent === ch) return;
+      nxt.textContent = ch;
       digit.classList.remove('flipping');
       void digit.offsetWidth;
       digit.classList.add('flipping');
-      setTimeout(() => {
-        current.textContent = newChar;
-        digit.classList.remove('flipping');
-      }, 480);
+      setTimeout(() => { cur.textContent = ch; digit.classList.remove('flipping'); }, 480);
     });
   }
-
   const flapEls = {
-    days: document.getElementById('days'),
-    hours: document.getElementById('hours'),
+    days:    document.getElementById('days'),
+    hours:   document.getElementById('hours'),
     minutes: document.getElementById('minutes'),
     seconds: document.getElementById('seconds'),
   };
   Object.values(flapEls).forEach(buildFlap);
 
   function updateCountdown() {
-    const target = new Date('2026-06-19T16:00:00');
-    const now = new Date();
-    const diff = target - now;
-
-    if (diff <= 0) {
-      Object.values(flapEls).forEach(el => setFlap(el, 0));
-      return;
-    }
-
-    const d = Math.floor(diff / 86400000);
-    const h = Math.floor((diff % 86400000) / 3600000);
-    const m = Math.floor((diff % 3600000) / 60000);
-    const s = Math.floor((diff % 60000) / 1000);
-
-    setFlap(flapEls.days, d);
-    setFlap(flapEls.hours, h);
-    setFlap(flapEls.minutes, m);
-    setFlap(flapEls.seconds, s);
+    const diff = new Date('2026-06-19T16:00:00') - new Date();
+    if (diff <= 0) { Object.values(flapEls).forEach(el => setFlap(el, 0)); return; }
+    setFlap(flapEls.days,    Math.floor(diff / 86400000));
+    setFlap(flapEls.hours,   Math.floor((diff % 86400000) / 3600000));
+    setFlap(flapEls.minutes, Math.floor((diff % 3600000) / 60000));
+    setFlap(flapEls.seconds, Math.floor((diff % 60000) / 1000));
   }
   setInterval(updateCountdown, 1000);
   updateCountdown();
 
-  // Split-text hero
-  document.querySelectorAll('#hero-title [data-split]').forEach((el, wordIdx) => {
-    const text = el.textContent;
-    el.innerHTML = '';
-    [...text].forEach((ch, i) => {
-      const span = document.createElement('span');
-      span.className = 'split-char';
-      span.textContent = ch === ' ' ? '\u00A0' : ch;
-      span.style.animationDelay = `${0.3 + (wordIdx * 0.15) + (i * 0.06)}s`;
-      el.appendChild(span);
-    });
-  });
-
-  // Parallax mouse-move
-  const parallaxEls = document.querySelectorAll('.parallax');
-  let px = 0, py = 0, tx = 0, ty = 0;
-  window.addEventListener('mousemove', e => {
-    tx = (e.clientX / window.innerWidth - 0.5) * 2;
-    ty = (e.clientY / window.innerHeight - 0.5) * 2;
-  });
-  function parallaxLoop() {
-    px += (tx - px) * 0.08;
-    py += (ty - py) * 0.08;
-    parallaxEls.forEach(el => {
-      const d = parseFloat(el.dataset.depth || '0.05');
-      el.style.transform = `translate3d(${px * d * 100}px, ${py * d * 100}px, 0)`;
-    });
-    requestAnimationFrame(parallaxLoop);
-  }
-  parallaxLoop();
-
-  // Program unlock logic
+  // Program schedule
   const schedule = {
     friday: [
-      { time: '~17:00', text: '🚗 Arrivo tardo pomeriggio' },
-      { time: '~20:30', text: '🍷 Cena in struttura' },
-      { time: '~22:00', text: '🌙 Serata libera' },
+      { time: '~17:00', text: 'Arrivo tardo pomeriggio' },
+      { time: '~20:30', text: 'Cena in struttura' },
+      { time: '~22:00', text: 'Serata libera' },
     ],
     saturday: [
-      { time: 'mattina', text: '🏊 Piscina' },
-      { time: '14:00', text: '🍾 Visita acetaia' },
-      { time: 'sera', text: '🍝 Cena a Bologna' },
+      { time: 'mattina', text: 'Piscina' },
+      { time: '14:00',   text: 'Visita acetaia' },
+      { time: 'sera',    text: 'Cena a Bologna', secret: true },
     ],
     sunday: [
-      { time: 'mattina', text: '🏊 Piscina' },
-      { time: '—', text: '🎯 Attività facoltativa in struttura' },
-    ]
+      { time: 'mattina', text: 'Piscina' },
+      { time: '—',       text: 'Attivita facoltativa in struttura' },
+    ],
   };
 
   function isUnlocked(day) {
-    const now = new Date();
-    if (day === 'friday')   return now >= new Date('2026-06-19T00:00:00');
-    if (day === 'saturday') return now >= new Date('2026-06-20T00:00:00');
-    if (day === 'sunday')   return now >= new Date('2026-06-21T00:00:00');
+    const n = new Date();
+    if (day === 'friday')   return n >= new Date('2026-06-19T00:00:00');
+    if (day === 'saturday') return n >= new Date('2026-06-20T00:00:00');
+    if (day === 'sunday')   return n >= new Date('2026-06-21T00:00:00');
     return true;
+  }
+
+  function renderSchedule(day) {
+    return schedule[day].map(i =>
+      `<div class="program-item${i.secret ? ' item-secret' : ''}">
+        <span class="program-time">${i.time}</span>
+        <span class="program-text">${i.text}</span>
+      </div>`
+    ).join('');
   }
 
   function toggleDay(day) {
     if (!isUnlocked(day)) {
       const msg = document.getElementById(`locked-${day}`);
-      msg.classList.remove('shake');
-      void msg.offsetWidth;
-      msg.classList.add('shake');
+      msg.classList.remove('shake'); void msg.offsetWidth; msg.classList.add('shake');
       return;
     }
-
-    const content = document.getElementById(`content-${day}`);
+    const content   = document.getElementById(`content-${day}`);
     const lockedMsg = document.getElementById(`locked-${day}`);
-    const lock = document.getElementById(`lock-${day}`);
-
-    if (!content.innerHTML.trim()) {
-      const items = schedule[day];
-      content.innerHTML = items.map(i => `
-        <div class="program-item">
-          <span class="program-time">${i.time}</span>
-          <span class="program-text">${i.text}</span>
-        </div>
-      `).join('');
-    }
-
+    const lock      = document.getElementById(`lock-${day}`);
+    if (!content.innerHTML.trim()) content.innerHTML = renderSchedule(day);
     content.classList.toggle('unlocked');
     lockedMsg.classList.toggle('show');
-    lock.textContent = content.classList.contains('unlocked') ? '🔓' : '🔒';
+    lock.textContent = content.classList.contains('unlocked') ? 'APERTO' : 'CHIUSO';
   }
 
-  // Pre-unlock + pre-populate days that are already available
   ['friday', 'saturday', 'sunday'].forEach(day => {
-    if (isUnlocked(day)) {
-      const lock = document.getElementById(`lock-${day}`);
-      if (lock) lock.textContent = '🔓';
-      const content = document.getElementById(`content-${day}`);
-      if (content && !content.innerHTML.trim()) {
-        const items = schedule[day];
-        content.innerHTML = items.map(i => `
-          <div class="program-item">
-            <span class="program-time">${i.time}</span>
-            <span class="program-text">${i.text}</span>
-          </div>
-        `).join('');
-      }
-    }
+    if (!isUnlocked(day)) return;
+    document.getElementById(`lock-${day}`).textContent = 'APERTO';
+    const content = document.getElementById(`content-${day}`);
+    if (content && !content.innerHTML.trim()) content.innerHTML = renderSchedule(day);
   });
 
   // Scroll fade-in
-  const observer = new IntersectionObserver(entries => {
+  const obs = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.1 });
-  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
 </script>
 </body>
 </html>
