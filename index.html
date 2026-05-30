@@ -529,6 +529,7 @@
         </div>
         <div class="day-content" id="content-friday"></div>
         <div class="locked-msg show" id="locked-friday">il programma si svela il 19 giugno — a presto!</div>
+
       </div>
 
       <div class="day-card">
@@ -540,7 +541,7 @@
           <span class="lock-icon" id="lock-saturday">CHIUSO</span>
         </div>
         <div class="day-content" id="content-saturday"></div>
-        <div class="locked-msg show" id="locked-saturday">il programma si svela il 20 giugno — a presto!</div>
+        <div class="locked-msg show" id="locked-saturday">il programma si svela il 19 giugno — a presto!</div>
       </div>
 
       <div class="day-card">
@@ -552,7 +553,7 @@
           <span class="lock-icon" id="lock-sunday">CHIUSO</span>
         </div>
         <div class="day-content" id="content-sunday"></div>
-        <div class="locked-msg show" id="locked-sunday">il programma si svela il 21 giugno — a presto!</div>
+        <div class="locked-msg show" id="locked-sunday">il programma si svela il 19 giugno — a presto!</div>
       </div>
 
     </div>
@@ -635,7 +636,7 @@
     saturday: [
       { time: 'mattina', text: 'Piscina' },
       { time: '14:00',   text: 'Visita acetaia' },
-      { time: 'sera',    text: 'Cena a Bologna', secret: true },
+      { time: 'sera',    text: 'Cena a Bologna' },
     ],
     sunday: [
       { time: 'mattina', text: 'Piscina' },
@@ -644,11 +645,7 @@
   };
 
   function isUnlocked(day) {
-    const n = new Date();
-    if (day === 'friday')   return n >= new Date('2026-06-19T00:00:00');
-    if (day === 'saturday') return n >= new Date('2026-06-20T00:00:00');
-    if (day === 'sunday')   return n >= new Date('2026-06-21T00:00:00');
-    return true;
+    return new Date() >= new Date('2026-06-19T00:00:00');
   }
 
   function renderSchedule(day) {
